@@ -14,9 +14,17 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+# teamtasker/urls.py
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
+from core import views as core_views
+from django.contrib.auth.views import LogoutView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('signup/', core_views.signup, name='signup'),
+    path('login/', core_views.CustomLoginView.as_view(), name='login'),
+    path('logout/', LogoutView.as_view(), name='logout'),
+    path('', core_views.dashboard, name='dashboard'),
+    # Later you might include other core URLs, e.g. project/task routes, perhaps under prefixes like 'projects/'.
 ]

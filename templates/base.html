@@ -1,0 +1,28 @@
+<!-- templates/base.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TeamTasker</title>
+    <!-- You can link Bootstrap or custom CSS later -->
+</head>
+<body>
+    <header>
+        <h1>TeamTasker</h1>
+        <!-- Navigation will go here later -->
+    </header>
+    <main>
+        {% block content %}{% endblock %}
+        {% if user.is_authenticated %}
+  <form method="post" action="{% url 'logout' %}">
+    {% csrf_token %}
+    <button type="submit">Logout</button>
+  </form>
+{% endif %}
+    </main>
+    <footer>
+        <p>&copy; {{ now.year }} TeamTasker</p>
+    </footer>
+</body>
+</html>
