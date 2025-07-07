@@ -1,4 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 <p>Welcome, {{ request.user.username }}! This is your dashboard.</p>
+<br>
+<a href="{% url 'project_list' %}">📁 View Your Projects</a>
+
 {% endblock %}
