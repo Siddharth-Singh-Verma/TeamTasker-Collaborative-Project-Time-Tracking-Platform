@@ -4,10 +4,11 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth import login as auth_login
 from django.contrib.auth.views import LoginView, LogoutView
 from core.form import SignUpForm, ProjectForm, TaskForm, InviteMemberForm
-from core.models import Project, Task
+from core.models import Project, Task, Activity
+from core.utils import log_activity
 @login_required
 def dashboard(request):
-    return render(request, 'dashboard.html')
+    return render(request, 'dashboard.html',)
 
 
 def signup(request):
@@ -35,7 +36,8 @@ class CustomLogoutView(LogoutView):
 @login_required
 def project_list(request):
     projects = request.user.projects.all()
-    return render(request, 'project_list.html', {'projects': projects})
+    activities = Activity.objects.filter(user=request.user).order_by('-timestamp')[:10]
+    return render(request, 'project_list.html', {'projects': projects, 'activities': activities})
 
 
 @login_required
@@ -45,6 +47,8 @@ def create_project(request):
         if form.is_valid():
             project = form.save()
             project.members.add(request.user)
+            log_activity(request.user, project, 'create_project')
+
             return redirect('project_list')
     else:
         form = ProjectForm()
@@ -63,6 +67,7 @@ def project_detail(request, project_id):
         if invite_form.is_valid():
             user_to_add = invite_form.cleaned_data['user']
             project.members.add(user_to_add)
+            log_activity(request.user, project, 'invite_user')
             return redirect('project_detail', project_id=project.id)
 
     if request.method == 'POST':
@@ -71,6 +76,7 @@ def project_detail(request, project_id):
             task = form.save(commit=False)
             task.project = project
             task.save()
+            log_activity(request.user, project, 'add_task')
             return redirect('project_detail', project_id=project.id)
     else:
         form = TaskForm(project=project,initial={'assignee': request.user})
@@ -91,6 +97,8 @@ def edit_task(request, project_id, task_id):
         form = TaskForm(request.POST, instance=task, project=project)
         if form.is_valid():
             form.save()
+            log_activity(request.user, project, 'update_task')
+
             return redirect('project_detail', project_id=project.id)
     else:
         form = TaskForm(instance=task, project=project)
@@ -109,6 +117,7 @@ def delete_task(request, project_id, task_id):
 
     if request.method == 'POST':
         task.delete()
+        log_activity(request.user, project, 'delete_task')
         return redirect('project_detail', project_id=project.id)
 
     return render(request, 'delete_task.html', {'task': task, 'project': project})

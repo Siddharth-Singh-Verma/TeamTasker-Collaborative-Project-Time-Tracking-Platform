@@ -39,3 +39,20 @@ class TimeEntry(models.Model):
     def __str__(self):
         return f"{self.user.username} - {self.task.title} - {self.hours_spent}h"
 
+# core/models.py
+class Activity(models.Model):
+    ACTION_CHOICES = [
+        ('create_project', 'Created a project'),
+        ('add_task', 'Added a task'),
+        ('update_task', 'Updated a task'),
+        ('delete_task', 'Deleted a task'),
+        ('invite_user', 'Invited a user'),
+        # You can add more
+    ]
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    action = models.CharField(max_length=50, choices=ACTION_CHOICES)
+    timestamp = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} {self.get_action_display()} in {self.project.name}"

@@ -11,4 +11,12 @@
     <li>No projects found.</li>
   {% endfor %}
 </ul>
+
+<h3>Recent Activity</h3>
+<ul>
+  {% for activity in activities %}
+    <li>{{ activity.timestamp|date:"M d, H:i" }} – {{ activity }}</li>
+  {% endfor %}
+</ul>
+
 {% endblock %}
