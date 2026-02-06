@@ -206,6 +206,4 @@ MIT License
 
 Siddharth
 
----
 
-If you want, I can tailor this README for **GitHub (more professional), Resume, or Portfolio website**.
